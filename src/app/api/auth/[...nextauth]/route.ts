@@ -1,7 +1,7 @@
-import NextAuth from 'next-auth'
+import NextAuth, { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt'
   },
@@ -40,7 +40,7 @@ const handler = NextAuth({
           const data = await res.json()
           return {
             id: data.id,
-            name: data.username
+            name: username
           }
         } else {
           return null
@@ -48,6 +48,8 @@ const handler = NextAuth({
       }
     })
   ]
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

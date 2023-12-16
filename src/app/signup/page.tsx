@@ -8,7 +8,7 @@ export default function Page() {
       <SignUpForm />
       <span>
         Already have an account?{' '}
-        <Link href="/signup" className="underline">
+        <Link href="/login" className="underline">
           Login
         </Link>
         .
