@@ -3,17 +3,17 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 
 const handler = NextAuth({
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt'
   },
   pages: {
-    signIn: '/login',
+    signIn: '/login'
   },
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
         username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
-        password: { label: 'Password', type: 'password' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         const { username, password } = credentials as {
@@ -30,24 +30,24 @@ const handler = NextAuth({
           {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password }),
-          },
+            body: JSON.stringify({ username, password })
+          }
         )
 
         if (res.ok) {
           const data = await res.json()
           return {
             id: data.id,
-            name: data.username,
+            name: data.username
           }
         } else {
           return null
         }
-      },
-    }),
-  ],
+      }
+    })
+  ]
 })
 
 export { handler as GET, handler as POST }

@@ -1,9 +1,8 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -17,6 +16,8 @@ import { Input } from '@/components/ui/input'
 import { signIn } from 'next-auth/react'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
+import HCaptcha from '@hcaptcha/react-hcaptcha'
+import * as z from 'zod'
 
 const formSchema = z.object({
   username: z
@@ -30,7 +31,9 @@ const formSchema = z.object({
   password: z.string().min(6, 'Password must contain at least 6 characters')
 })
 
-export function LoginForm() {
+export function SignUpForm() {
+  const [captcha, setCaptcha] = useState<string | null>(null)
+  const hCaptcha = useRef<HCaptcha>(null)
   const { push } = useRouter()
   const { toast } = useToast()
 
@@ -43,16 +46,29 @@ export function LoginForm() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = await signIn('credentials', {
-      ...values,
-      redirect: false
-    })
-    if (result?.ok) {
-      push(`/${values.username}`)
-    } else {
+    hCaptcha.current?.resetCaptcha()
+
+    if (!captcha) {
       toast({
         title: 'Error',
-        description: 'Wrong username or password!'
+        description: 'Wrong captcha!'
+      })
+      return
+    }
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ...values })
+    })
+    if (res.ok) {
+      push(`/${values.username}`)
+    } else if (res.status == 409) {
+      toast({
+        title: 'Error',
+        description: 'Username already taken!'
       })
     }
   }
@@ -88,6 +104,14 @@ export function LoginForm() {
               <FormMessage />
             </FormItem>
           )}
+        />
+        <HCaptcha
+          ref={hCaptcha}
+          sitekey={
+            process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ||
+            '10000000-ffff-ffff-ffff-000000000001'
+          }
+          onVerify={(token) => setCaptcha(token)}
         />
         <Button type="submit">Submit</Button>
       </form>

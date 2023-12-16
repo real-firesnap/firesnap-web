@@ -13,11 +13,11 @@ const jost = Jost({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Firesnap',
-  description: 'Firesnap home page',
+  description: 'Firesnap home page'
 }
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {
