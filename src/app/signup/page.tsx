@@ -4,7 +4,7 @@ import Link from 'next/link'
 export default function Page() {
   return (
     <main className="flex flex-col items-center py-14 gap-10">
-      <span className="text-xl font-semibold">Welcome to Firesnap!</span>
+      <span className="text-xl font-semibold">Welcome to the Firesnap!</span>
       <SignUpForm />
       <span>
         Already have an account?{' '}

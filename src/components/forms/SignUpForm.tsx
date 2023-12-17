@@ -7,13 +7,13 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { signIn } from 'next-auth/react'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
@@ -28,6 +28,9 @@ const formSchema = z.object({
       /^[a-zA-Z0-9\-_]*$/,
       'Username must contain only English letters, numbers, dash and underscore'
     ),
+  name: z.string()
+    .min(3, 'Name must contain at least 3 characters')
+    .max(15, 'Name must contain at most 30 characters'),
   password: z.string().min(6, 'Password must contain at least 6 characters')
 })
 
@@ -41,6 +44,7 @@ export function SignUpForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: '',
+      name: '',
       password: ''
     }
   })
@@ -70,6 +74,11 @@ export function SignUpForm() {
         title: 'Error',
         description: 'Username already taken!'
       })
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Unknown error!'
+      })
     }
   }
 
@@ -86,8 +95,22 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="cool_man_228" {...field} />
+                <Input placeholder="ex. my_username" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Public name</FormLabel>
+              <FormControl>
+                <Input placeholder="ex. Jessie Vincent" {...field} />
+              </FormControl>
+              <FormDescription>You can always change it later.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -99,7 +122,7 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="my pa$$w0rd" {...field} />
+                <Input type="password" placeholder="ex. my_pa$$w0rd" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -113,7 +136,7 @@ export function SignUpForm() {
           }
           onVerify={(token) => setCaptcha(token)}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Sign Up</Button>
       </form>
     </Form>
   )
